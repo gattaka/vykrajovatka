@@ -17,14 +17,18 @@ var List = React.createClass({
 	  },
 	render: function() {
 		  var items = this.state.data.map(function(item) {
+			  var image;
 			  var imagePath = "image?id=" + item.id + "&image=" + item.foto;
+			  if (typeof imagePath !== "undefined") {
+				  image = (<img className="foto" src={imagePath}/>);
+			  }
 			  return (
 			        <tr key={item.id}>
 				        <td>{item.jmeno}</td>
 						<td>{item.datum}</td>
 						<td>{item.popis}</td>
 						<td>{item.tagy}</td>	
-						<td><img src={imagePath}/></td>
+						<td>{image}</td>
 			        </tr>
 				);
 		  });

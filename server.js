@@ -114,7 +114,7 @@ app.get("/data", function(req, res) {
 						jmeno: item.nazev,
 						datum: new Date(item.datum).toISOString(),
 						popis : item.popis,
-						tagy: item.tagy
+						tagy: item.tagy,						
 					};
 					
 					if (typeof item._attachments !== 'undefined') {
