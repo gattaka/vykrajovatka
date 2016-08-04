@@ -1,0 +1,35 @@
+{
+  "name": "Vykrajovátka",
+  "version": "0.0.1",
+  "private": true,
+  "license": "free",
+  "description": "DB vykrajovátek",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.4.3",
+    "express": "^4.4.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gattaka/vykrajovatka"
+  },
+  "keywords": [
+    "react",
+    "vykrajovatka",
+    "nano",
+    "couch"
+  ],
+  "author": "Hynek Uhlíř aka Gattaka",
+  "bugs": {
+    "url": "https://github.com/reactjs/react-tutorial/issues"
+  },
+  "homepage": "gattserver.cz",
+  "engines" : {
+    "node" : "0.12.x"
+  }
+}
