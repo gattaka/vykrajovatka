@@ -106,40 +106,22 @@ app.post("/data", function(req, res) {
 			popis : fields.popis,
 		};
 
-//		var buffer = new Buffer(Number.parseInt(fields.filesize));
-//		buffer.write(fields.file);
-//		var buffer = new Buffer(fields.file, "utf-8");
-		var base64 = fields.file.split(",", 2)[1];
-		var buffer = new Buffer(base64, 'base64');
+		var buffer = new Buffer(fields.file, 'base64');
 		var attach = {
 			name : fields.filename,
 			data : buffer,
 			content_type : fields.filetype
 		};
-		
-		// OK
-		/*
-		fs.readFile('usbasp_circuit.png', function(err, data) {
-			if (!err) {
-				dao.multipart.insert(doc, [ {
-					name : 'usbasp_circuit.png',
-					data : data,
-					content_type : 'image/png'
-				} ], uuid.v1(), function(err, body) {
-					if (!err)
-						console.log(body);
-				});
+
+		dao.multipart.insert(doc, [ attach ], uuid.v1(), function(err) {
+			if (err) {
+				console.log('failed: ' + err);
+			} else {
+				console.log('succeeded');
+				res.end();
 			}
 		});
-		 */
-		
-		dao.multipart.insert(doc, [ attach ], uuid.v1(), function(err) {
-			if (err)
-				console.log('failed: ' + err);
-			else
-				console.log('succeeded');
-		});
-		
+
 	});
 
 });

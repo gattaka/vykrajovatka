@@ -62,3 +62,92 @@ ul {
 	max-width: 50px;
 	max-height: 50px;
 }
+
+.image-preview {
+	max-width: 210px;
+	max-height: 210px;
+	position: relative;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+form.items-form {
+	margin-right: 8px;
+	line-height: 25px;
+	float: left;
+}
+
+.preview {
+	float: left;
+	width: 216px;
+	height: 216px;
+	border: 1px solid #aaa;
+	box-sizing: border-box;
+	border-radius: 3px;
+	height: 216px;
+}
+
+.foot-div {
+	clear: both;
+}
+
+textarea {
+	font-family: sans-serif;
+}
+
+.form-div {
+	background-color: #eee;
+	padding: 8px 0px 0px 8px;
+	width: 732px;
+	border-radius: 6px;
+}
+
+form.items-form input, textarea {
+	font-size: 15px;
+	margin-bottom: 8px;
+	width: 500px;
+	border-radius: 3px;
+}
+
+form.items-form input[type=text], textarea {
+	padding: 2px;
+	box-sizing: border-box;
+	display: block;
+}
+
+input[type=text], input[type=submit], textarea {
+	font-family: sans-serif;
+	border: 1px solid #aaa;
+}
+
+.list-div {
+	margin: 0 0 8px 0;
+	border-radius: 6px;
+	box-sizing: border-box;
+	background-color: #eee;
+	padding: 8px;
+	width: 740px;
+}
+
+tbody tr:nth-child(odd) {
+	background: #fff;
+}
+
+tr td {
+    border-top: 1px solid #aaa;
+    border-left: 1px solid #aaa;
+    padding: 4px;
+    line-height: 0px;
+}
+
+tr td:FIRST-CHILD {
+    border-left: none;
+}
+
+
+table.list-table {
+	width: 100%;
+	border: 1px solid #aaa;
+	border-radius: 3px;
+}
