@@ -66,15 +66,13 @@ var ItemsForm = React.createClass({
 	  },
 	  handleFileChange: function(e) {
 		  /*
-	    var photo = document.getElementById("foto");
-	    // the file is the first element in the files property
-	    var file = photo.files[0];
-
-	    console.log("File name: " + file.name);
-	    console.log("File size: " + file.size);
-	    console.log("File type: " + file.type);
-	    this.setState({file: file});
-*/
+			 * var photo = document.getElementById("foto"); // the file is the
+			 * first element in the files property var file = photo.files[0];
+			 * 
+			 * console.log("File name: " + file.name); console.log("File size: " +
+			 * file.size); console.log("File type: " + file.type);
+			 * this.setState({file: file});
+			 */
 	    const reader = new FileReader();
 	    const file = e.target.files[0];
 
@@ -82,11 +80,16 @@ var ItemsForm = React.createClass({
 	      this.setState({
 	        data_uri: upload.target.result,
 	        filename: file.name,
-	        filetype: file.type
+	        filetype: file.type,
+	        filesize: file.size
 	      });
+	      console.log("file.name: " + file.name);
+	      console.log("file.type: " + file.type);
+	      console.log("file.size: " + file.size);
 	    };
 
-	    reader.readAsDataURL(file);
+	    // https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+	    reader.readAsDataURL(file); // base64 s prefixem
 	    
 	  },
 	  handleSubmit: function(e) {
@@ -98,26 +101,31 @@ var ItemsForm = React.createClass({
 	    if (!nazev || !popis) {
 	      return;
 	    }
-	    var data = {
-	    		nazev: nazev, 
-	    		popis: popis, 
-	    		tagy: tagy, 
-	    		file: this.state.data_uri,
-	    		filename: this.state.filename,
-	    		filetype: this.state.filetype
-	    		};
-	    this.setState({nazev: '', popis: '', tagy: '', data_uri: '', filename: '', filetype: ''});
+	    
+	    var data = new FormData();
+        data.append('nazev', nazev);
+        data.append('popis', popis);
+        data.append('tagy', tagy);
+        data.append('filename', this.state.filename);
+        data.append('filetype', this.state.filetype);
+        data.append('filesize', this.state.filesize);
+        data.append('file', this.state.data_uri);
+
+	    this.setState({nazev: '', popis: '', tagy: '', data_uri: '', filename: '', filetype: '', filesize : 0});
 	    
 	    $.ajax({
 	        url: this.props.url,
-	        dataType: 'json',
 	        type: 'POST',
 	        data: data,
+	        // zabrání problému s "payload too large"
+	        processData: false,
+	        cache: false,
+	        contentType: false,
 	        success: function(data) {
-	          this.setState({data: data});
+	        	this.setState({data: data});
 	        }.bind(this),
 	        error: function(xhr, status, err) {
-	          console.error(this.props.url, status, err.toString());
+	        	console.error(this.props.url, status, err.toString());
 	        }.bind(this)
 	      });
 	    
@@ -127,9 +135,7 @@ var ItemsForm = React.createClass({
 		  if (this.state.data_uri) {
 		      uploaded = (
 		        <div>
-		          <h4>Image uploaded!</h4>
-		          <img className='image-preview' src={this.state.data_uri} />
-		          <pre className='image-link-box'>{this.state.data_uri}</pre>
+		          <h4>Ready...</h4>
 		        </div>
 		      );
 		    }
@@ -154,8 +160,8 @@ var ItemsForm = React.createClass({
 	          onChange={this.handlePopisChange}
 	        /><br/>
 	        <input id="foto" type="file" name="foto" className="upload-file" onChange={this.handleFileChange}/><br/>
-	        	{uploaded}
 	        <input type="submit" value="Post" />
+	        {uploaded}
 	      </form>
 	    );
 	  }

@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var util = require('util');
 var nano = require('nano')('http://localhost:5984');
 var path = require('path');
+var uuid = require('node-uuid');
 var url = require('url');
 var fs = require('fs');
 var express = require('express');
@@ -95,28 +96,52 @@ app.get("/image", function(req, res) {
 app.post("/data", function(req, res) {
 	console.log("Posting: /data");
 
-	var doc = {
-		datum: Date.now(),
-		nazev: req.body.nazev,
-		tagy: req.body.tagy,
-		popis: req.body.popis
-	};
+	var form = new formidable.IncomingForm();
+	form.parse(req, function(err, fields, files) {
+		console.log("Parse");
+		var doc = {
+			datum : Date.now(),
+			nazev : fields.nazev,
+			tagy : fields.tagy,
+			popis : fields.popis,
+		};
 
-	var decodedImage = new Buffer(req.body.file, 'base64');
-
-	var attach = {
-		name : req.body.filename,
-		data : req.body.file,
-		content_type : req.body.filetype
-	};
-
-	dao.multipart.insert(doc, [attach], doc.nazev, function(err) {
-		if (err)
-			console.log('failed: ' + err);
-		else
-			console.log('succeeded');
+//		var buffer = new Buffer(Number.parseInt(fields.filesize));
+//		buffer.write(fields.file);
+//		var buffer = new Buffer(fields.file, "utf-8");
+		var base64 = fields.file.split(",", 2)[1];
+		var buffer = new Buffer(base64, 'base64');
+		var attach = {
+			name : fields.filename,
+			data : buffer,
+			content_type : fields.filetype
+		};
+		
+		// OK
+		/*
+		fs.readFile('usbasp_circuit.png', function(err, data) {
+			if (!err) {
+				dao.multipart.insert(doc, [ {
+					name : 'usbasp_circuit.png',
+					data : data,
+					content_type : 'image/png'
+				} ], uuid.v1(), function(err, body) {
+					if (!err)
+						console.log(body);
+				});
+			}
+		});
+		 */
+		
+		dao.multipart.insert(doc, [ attach ], uuid.v1(), function(err) {
+			if (err)
+				console.log('failed: ' + err);
+			else
+				console.log('succeeded');
+		});
+		
 	});
-	
+
 });
 
 app.listen(3000);
