@@ -5,6 +5,7 @@ body {
 	line-height: 1.7;
 	margin: 0;
 	padding: 30px;
+	text-align: center;
 }
 
 a {
@@ -56,6 +57,10 @@ p, ul {
 
 ul {
 	padding-left: 30px;
+}
+
+.main-div {
+	display: inline-block;
 }
 
 .foto {
@@ -150,4 +155,5 @@ table.list-table {
 	width: 100%;
 	border: 1px solid #aaa;
 	border-radius: 3px;
+	text-align: center;
 }

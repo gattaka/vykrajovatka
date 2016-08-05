@@ -37,7 +37,7 @@ var List = React.createClass({
 				);
 		  });
 		  return (
-				<div>
+				<div className="main-div">
 				   <div className="list-div">
 						<table className="list-table" cellSpacing="0" cellPadding="0">
 						  	<tbody>
@@ -97,7 +97,7 @@ var ItemsForm = React.createClass({
 	    var nazev = this.state.nazev.trim();
 	    var popis = this.state.popis.trim();
 	    var tagy = this.state.tagy.trim();
-	    if (!nazev || !popis) {
+	    if (!nazev) {
 	      return;
 	    }
 	    

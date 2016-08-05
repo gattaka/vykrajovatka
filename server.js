@@ -7,6 +7,7 @@ var uuid = require('node-uuid');
 var url = require('url');
 var fs = require('fs');
 var express = require('express');
+var dateFormat = require('dateformat');
 
 var app = express();
 
@@ -61,7 +62,7 @@ app.get("/data", function(req, res) {
 					var jsonItem = {
 						id : row.id,
 						jmeno : item.nazev,
-						datum : new Date(item.datum).toISOString(),
+						datum : dateFormat(new Date(item.datum), "d.mm.yyyy"),
 						popis : item.popis,
 						tagy : item.tagy,
 					};
