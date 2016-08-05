@@ -53,7 +53,7 @@ var List = React.createClass({
 
 var ItemsForm = React.createClass({
 	  getInitialState: function() {
-	    return {nazev: '', popis: '', tagy: ''};
+	    return {nazev: '', popis: '', tagy: '', file: ''};
 	  },
 	  handleNazevChange: function(e) {
 	    this.setState({nazev: e.target.value});
@@ -62,13 +62,35 @@ var ItemsForm = React.createClass({
 	    this.setState({popis: e.target.value});
 	  },
 	  handleTagyChange: function(e) {
-		    this.setState({tagy: e.target.value});
+	    this.setState({tagy: e.target.value});
+	  },
+	  handleFileChange: function(e) {
+		  /*
+	    var photo = document.getElementById("foto");
+	    // the file is the first element in the files property
+	    var file = photo.files[0];
+
+	    console.log("File name: " + file.name);
+	    console.log("File size: " + file.size);
+	    console.log("File type: " + file.type);
+	    this.setState({file: file});
+*/
+	    const reader = new FileReader();
+	    const file = e.target.files[0];
+
+	    reader.onload = (upload) => {
+	      this.setState({
+	        data_uri: upload.target.result,
+	        filename: file.name,
+	        filetype: file.type
+	      });
+	    };
+
+	    reader.readAsDataURL(file);
+	    
 	  },
 	  handleSubmit: function(e) {
   	    e.preventDefault();
-	    
-	    var fd = new FormData();    	
-        fd.append('file', ReactDOM.findDOMNode().files[0]);
 	    
 	    var nazev = this.state.nazev.trim();
 	    var popis = this.state.popis.trim();
@@ -76,8 +98,15 @@ var ItemsForm = React.createClass({
 	    if (!nazev || !popis) {
 	      return;
 	    }
-	    var data = {nazev: nazev, popis: popis, tagy: tagy, file:fd};
-	    this.setState({nazev: '', popis: '', tagy: ''});
+	    var data = {
+	    		nazev: nazev, 
+	    		popis: popis, 
+	    		tagy: tagy, 
+	    		file: this.state.data_uri,
+	    		filename: this.state.filename,
+	    		filetype: this.state.filetype
+	    		};
+	    this.setState({nazev: '', popis: '', tagy: '', data_uri: '', filename: '', filetype: ''});
 	    
 	    $.ajax({
 	        url: this.props.url,
@@ -94,8 +123,18 @@ var ItemsForm = React.createClass({
 	    
 	  },
 	  render: function() {
+		  let uploaded;
+		  if (this.state.data_uri) {
+		      uploaded = (
+		        <div>
+		          <h4>Image uploaded!</h4>
+		          <img className='image-preview' src={this.state.data_uri} />
+		          <pre className='image-link-box'>{this.state.data_uri}</pre>
+		        </div>
+		      );
+		    }
 	    return (
-	      <form className="itemsForm" onSubmit={this.handleSubmit}>
+	      <form ref="uploadForm" className="itemsForm" encType="multipart/form-data" onSubmit={this.handleSubmit}>
 	        <input
 	          type="text"
 	          placeholder="Název"
@@ -114,7 +153,8 @@ var ItemsForm = React.createClass({
 	          value={this.state.popis}
 	          onChange={this.handlePopisChange}
 	        /><br/>
-	        <input ref="file" type="file" name="file" className="upload-file"/><br/>
+	        <input id="foto" type="file" name="foto" className="upload-file" onChange={this.handleFileChange}/><br/>
+	        	{uploaded}
 	        <input type="submit" value="Post" />
 	      </form>
 	    );
