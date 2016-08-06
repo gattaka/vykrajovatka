@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Vykrajovátka</title>
-    <!-- Not present in the tutorial. Just for basic styling. -->
-    <link rel="stylesheet" href="css/base.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react-dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
-  </head>
-  <body>
-    <div id="content"></div>
-    <script type="text/babel" src="scripts/example.jsx"></script>
-  </body>
+<head>
+<meta charset="utf-8">
+<title>Vykrajovátka</title>
+<!-- Not present in the tutorial. Just for basic styling. -->
+<link rel="stylesheet" href="css/base.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react-dom.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
+</head>
+<body>
+	<script>
+		function hideImgDetail() {
+			$("#shadow")[0].style.display = "none";
+			$("#img-detail")[0].style.display = "none"
+		}
+	</script>
+	<div id="shadow" onclick="hideImgDetail()"></div>
+	<img id="img-detail" onclick="hideImgDetail()" src="image?id=3e75cd90-5c22-11e6-82cc-0b14271ddca7&amp;image=dopis2.png">
+	<div id="content"></div>
+	<script type="text/babel" src="scripts/example.jsx"></script>
+</body>
 </html>

@@ -53,3 +53,5 @@ function(doc) {
 } 
 
 http://127.0.0.1:5984/vykraj/_design/vykraj/_view/byMulti?key={"nazev":"Houba","tagy":["vìc","malá"]}
+
+http://127.0.0.1:5984/vykraj/_design/vykraj/_view/byTagy?startkey=[%22v%C4%9Bc%22]&endkey=[%22v%C4%9Bc%22,{}]

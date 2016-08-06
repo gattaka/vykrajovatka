@@ -26,6 +26,7 @@ var List = React.createClass({
 	handleNazevQueryChange : function(e) {
 		console.log("handleNazevQueryChange");
 		this.load("byNazev", e.target.value, e.target.value);
+		$(".tagy-query")[0].value = "";
 	},
 	handleDatumOdQueryChange : function(e) {
 		console.log("handleDatumOdQueryChange");
@@ -35,16 +36,24 @@ var List = React.createClass({
 	},
 	handleTagyQueryChange : function(e) {
 		console.log("handleTagyQueryChange");
+		this.load("byTag", e.target.value, e.target.value);
+		$(".nazev-query")[0].value = "";
+	},
+	onImgDetail : function(e) {
+		$("#shadow")[0].style.display = "block";
+		var img = $("#img-detail")[0];
+		img.style.display = "block";
+		img.src = e.target.src;
 	},
 	render: function() {
 		  var items = this.state.data.map(function(item) {
 			  var image;
 			  var imagePath = "image?id=" + item.id + "&image=" + item.foto;
 			  if (typeof imagePath !== "undefined") {
-				  image = (<img className="foto" src={imagePath}/>);
+				  image = (<img onClick={this.onImgDetail} className="foto" src={imagePath}/>);
 			  }
 			  return (
-			        <tr key={item.id}>
+			        <tr key={item.id} id={item.id}>
 			        	<td>{image}</td>
 				        <td>{item.jmeno}</td>
 						<td>{item.datum}</td>
@@ -52,7 +61,7 @@ var List = React.createClass({
 						<td>{item.tagy}</td>	
 			        </tr>
 				);
-		  });
+		  }.bind(this));
 		  return (
 				<div className="main-div">
 				   <div className="list-div">

@@ -72,12 +72,20 @@ app.get("/data", function(req, res) {
 
 	//dao.view("vykraj", "byNazev", { startkey : "H", endkey : "H\ufff0" }, function(select_err, select_body) {
 	dao.view("vykraj", query.view, params, function(select_err, select_body) {
-		if (!select_err) {
+		if (!select_err) {			
+		   	var dups = {};
 			var json = [];
 			select_body.rows.forEach(function(row) {
 				var doc_id = row.id;
 				var doc = row.doc;
 				var item = row.value;
+
+				// TODO tohle by se mělo dělat na DB
+				if (dups[row.id]) {
+					return;
+				} else {
+					dups[row.id] = true;
+				}
 
 				var jsonItem = {
 					id : row.id,
