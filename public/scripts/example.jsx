@@ -1,4 +1,3 @@
-
 var List = React.createClass({
 	getInitialState: function() {
 	    return {data: []};
@@ -6,9 +5,14 @@ var List = React.createClass({
 	componentDidMount: function() {
 		this.load();
 	},
-	load: function() {
+	load: function(view, startkey, endkey) {
+	  var url = this.props.url;
+	  if (view) {
+	  	url += "?view=" + view + "&startkey=" + startkey + "&endkey=" + endkey;
+	  }
+	
 	  $.ajax({
-		  url: this.props.url,
+		  url: url,
 		  dataType: 'json',
 		  cache: false,
 		  success: function(data) {
@@ -18,6 +22,19 @@ var List = React.createClass({
 			  console.error(this.props.url, status, err.toString());
 		  }.bind(this)
 	  });
+	},
+	handleNazevQueryChange : function(e) {
+		console.log("handleNazevQueryChange");
+		this.load("byNazev", e.target.value, e.target.value);
+	},
+	handleDatumOdQueryChange : function(e) {
+		console.log("handleDatumOdQueryChange");
+	},
+	handleDatumDoQueryChange : function(e) {
+		console.log("handleDatumDoQueryChange");
+	},
+	handleTagyQueryChange : function(e) {
+		console.log("handleTagyQueryChange");
 	},
 	render: function() {
 		  var items = this.state.data.map(function(item) {
@@ -48,6 +65,16 @@ var List = React.createClass({
 									<th>Popis</th>
 									<th>Štítky</th>
 								</tr>
+								<tr className="query-tr">
+						        	<td></td>
+							        <td><input className="nazev-query" type="text" placeholder="Vyhledat dle názvu" onChange={this.handleNazevQueryChange} /></td>
+									<td className="query-datum-td"><div>
+										<input className="datum-od-query" type="text" placeholder="Datum od" onChange={this.handleDatumOdQueryChange} />&nbsp;-&nbsp; 
+										<input className="datum-do-query" type="text" placeholder="Datum do" onChange={this.handleDatumDoQueryChange} />
+									</div></td>
+									<td className="popis-query-td"></td>
+									<td><input className="tagy-query" type="text" placeholder="Vyhledat dle štítku" onChange={this.handleTagyQueryChange} /></td>	
+						        </tr>
 								{items}
 							</tbody>
 						</table>

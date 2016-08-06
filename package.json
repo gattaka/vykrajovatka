@@ -6,10 +6,18 @@
   "description": "DB vykrajovátek",
   "main": "server.js",
   "dependencies": {
-    "body-parser": "^1.4.3",
-    "express": "^4.4.5"
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "formidable": "1.0.17",
+    "util": "0.10.3",
+    "nano": "6.2.0",
+    "path": "0.12.7",
+    "node-uuid": "1.4.7",
+    "url": "0.11.0",
+    "dateformat": "1.0.12"
   },
-  "devDependencies": {},
+  "devDependencies": {
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -19,10 +27,7 @@
     "url": "https://github.com/gattaka/vykrajovatka"
   },
   "keywords": [
-    "react",
-    "vykrajovatka",
-    "nano",
-    "couch"
+    "vykrajovatka"
   ],
   "author": "Hynek Uhlíř aka Gattaka",
   "bugs": {
@@ -30,6 +35,6 @@
   },
   "homepage": "gattserver.cz",
   "engines" : {
-    "node" : "0.12.x"
+    "node" : "4.4.0"
   }
 }

@@ -50,35 +50,52 @@ app.get("/", function(req, res) {
 
 // Data
 app.get("/data", function(req, res) {
-	console.log("Accessing: /data");
-	var json = [];
-	dao.list(function(err, body) {
-		var count = body.rows.length;
-		body.rows.forEach(function(row) {
-			dao.get(row.id, {
-				revs_info : true
-			}, function(err, item) {
-				if (!err) {
-					var jsonItem = {
-						id : row.id,
-						jmeno : item.nazev,
-						datum : dateFormat(new Date(item.datum), "d.mm.yyyy"),
-						popis : item.popis,
-						tagy : item.tagy,
-					};
+	console.log("Accessing: " + req.url);
 
-					if (typeof item._attachments !== 'undefined') {
-						jsonItem.foto = Object.keys(item._attachments)[0];
-					}
-					json.push(jsonItem);
+	var url_parts = url.parse(req.url, true);
+	var query = url_parts.query;
 
-					count--;
-					if (count == 0) {
-						res.send(json);
-					}
+	var params = {};
+
+	if (!query.view) {
+		query.view = "byNazev";
+	} else {		
+		if (query.startkey) {
+			if (query.endkey) {
+				params.startkey = query.startkey;		
+				params.endkey = query.endkey + "\ufff0";
+			} else {
+				params.key = query.startkey;		
+			}
+		}
+	}
+
+	//dao.view("vykraj", "byNazev", { startkey : "H", endkey : "H\ufff0" }, function(select_err, select_body) {
+	dao.view("vykraj", query.view, params, function(select_err, select_body) {
+		if (!select_err) {
+			var json = [];
+			select_body.rows.forEach(function(row) {
+				var doc_id = row.id;
+				var doc = row.doc;
+				var item = row.value;
+
+				var jsonItem = {
+					id : row.id,
+					jmeno : item.nazev,
+					datum : dateFormat(new Date(item.datum), "d.m.yyyy"),
+					popis : item.popis,
+					tagy : item.tagy,
+				};
+
+				if (typeof item._attachments !== 'undefined') {
+					jsonItem.foto = Object.keys(item._attachments)[0];
 				}
+				json.push(jsonItem);
 			});
-		});
+			res.send(json);
+		} else {
+			console.log("Error during view: " + select_err);
+		}
 	});
 });
 
@@ -130,3 +147,4 @@ app.post("/data", function(req, res) {
 app.listen(3000);
 
 console.log("Ready and listening...");
+
