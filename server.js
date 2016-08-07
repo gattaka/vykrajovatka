@@ -1,5 +1,4 @@
-var formidable = require('formidable');
-var bodyParser = require('body-parser');
+var formidable = require('express-formidable');
 var util = require('util');
 var nano = require('nano')('http://localhost:5984');
 var path = require('path');
@@ -27,9 +26,16 @@ if (typeof table === 'undefined') {
 app.set('port', (process.env.PORT || 3000));
 
 app.use('/', express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-	extended : true
+
+app.use(formidable.parse({
+	uploadDir : '/uploads/', // where you want to store uploaded files
+								// (temporary)
+	encoding : 'utf-8',
+	keepExtensions : true, // if you want to store files with extensions
+	multiples : true, // if you allow to upload multiple files
+	maxFieldsSize : 10 * 1024 * 1024, // maximum file size
+	maxFields : 1e3
+// limit qty of possible files in single upload
 }));
 
 // Additional middleware which will set headers that we need on each request.
@@ -59,21 +65,22 @@ app.get("/data", function(req, res) {
 
 	if (!query.view) {
 		query.view = "byNazev";
-	} else {		
+	} else {
 		if (query.startkey) {
 			if (query.endkey) {
-				params.startkey = query.startkey;		
+				params.startkey = query.startkey;
 				params.endkey = query.endkey + "\ufff0";
 			} else {
-				params.key = query.startkey;		
+				params.key = query.startkey;
 			}
 		}
 	}
 
-	//dao.view("vykraj", "byNazev", { startkey : "H", endkey : "H\ufff0" }, function(select_err, select_body) {
+	// dao.view("vykraj", "byNazev", { startkey : "H", endkey : "H\ufff0" },
+	// function(select_err, select_body) {
 	dao.view("vykraj", query.view, params, function(select_err, select_body) {
-		if (!select_err) {			
-		   	var dups = {};
+		if (!select_err) {
+			var dups = {};
 			var json = [];
 			select_body.rows.forEach(function(row) {
 				var doc_id = row.id;
@@ -122,32 +129,29 @@ app.get("/image", function(req, res) {
 app.post("/data", function(req, res) {
 	console.log("Posting: /data");
 
-	var form = new formidable.IncomingForm();
-	form.parse(req, function(err, fields, files) {
-		console.log("Parse");
-		var doc = {
-			datum : Date.now(),
-			nazev : fields.nazev,
-			tagy : fields.tagy,
-			popis : fields.popis,
-		};
+	var fields = req.body;
 
-		var buffer = new Buffer(fields.file, 'base64');
-		var attach = {
-			name : fields.filename,
-			data : buffer,
-			content_type : fields.filetype
-		};
+	var doc = {
+		datum : Date.now(),
+		nazev : fields.nazev,
+		tagy : fields.tagy,
+		popis : fields.popis,
+	};
 
-		dao.multipart.insert(doc, [ attach ], uuid.v1(), function(err) {
-			if (err) {
-				console.log('failed: ' + err);
-			} else {
-				console.log('succeeded');
-				res.end();
-			}
-		});
+	var buffer = new Buffer(fields.file, 'base64');
+	var attach = {
+		name : fields.filename,
+		data : buffer,
+		content_type : fields.filetype
+	};
 
+	dao.multipart.insert(doc, [ attach ], uuid.v1(), function(err) {
+		if (err) {
+			console.log('failed: ' + err);
+		} else {
+			console.log('succeeded');
+			res.end();
+		}
 	});
 
 });
@@ -155,4 +159,3 @@ app.post("/data", function(req, res) {
 app.listen(3000);
 
 console.log("Ready and listening...");
-

@@ -58,7 +58,8 @@ var List = React.createClass({
 				        <td>{item.jmeno}</td>
 						<td>{item.datum}</td>
 						<td>{item.popis}</td>
-						<td>{item.tagy}</td>	
+						<td>{item.tagy}</td>
+						<td className="oper-td"><img className="img-button" src="imgs/pencil_16.png"/>&nbsp;&nbsp;<img className="img-button" src="imgs/delete_16.png"/></td>	
 			        </tr>
 				);
 		  }.bind(this));
@@ -73,6 +74,7 @@ var List = React.createClass({
 									<th>Datum</th>
 									<th>Popis</th>
 									<th>Štítky</th>
+									<th></th>
 								</tr>
 								<tr className="query-tr">
 						        	<td></td>
@@ -82,7 +84,8 @@ var List = React.createClass({
 										<input className="datum-do-query" type="text" placeholder="Datum do" onChange={this.handleDatumDoQueryChange} />
 									</div></td>
 									<td className="popis-query-td"></td>
-									<td><input className="tagy-query" type="text" placeholder="Vyhledat dle štítku" onChange={this.handleTagyQueryChange} /></td>	
+									<td><input className="tagy-query" type="text" placeholder="Vyhledat dle štítku" onChange={this.handleTagyQueryChange} /></td>
+									<td></td>	
 						        </tr>
 								{items}
 							</tbody>
@@ -177,33 +180,33 @@ var ItemsForm = React.createClass({
 		var even = true;
 	    return (
 		    <div className="form-div">
-		      <form ref="upload-form" className="items-form" encType="multipart/form-data" onSubmit={this.handleSubmit}>	      	
-		        <input
-		          type="text"
-		          placeholder="Název"
-		          value={this.state.nazev}
-		          onChange={this.handleNazevChange}
-		        />
-		        <input
-		          type="text"
-		          placeholder="Štítky"
-		          value={this.state.tagy}
-		          onChange={this.handleTagyChange}
-		        />
-		        <textarea
-		          rows="5" cols="50" 
-		          placeholder="Popis"
-		          value={this.state.popis}
-		          onChange={this.handlePopisChange}
-		        />
-		        <input id="foto" type="file" name="foto" className="upload-file" onChange={this.handleFileChange}/><br/>
-		        <input type="submit" value="Uložit" />
-		      </form>
+		      <div className="items-form-div">
+			      <form ref="upload-form" className="items-form" encType="multipart/form-data" onSubmit={this.handleSubmit}>	      	
+			        <input
+			          type="text"
+			          placeholder="Název"
+			          value={this.state.nazev}
+			          onChange={this.handleNazevChange}
+			        />
+			        <input
+			          type="text"
+			          placeholder="Štítky"
+			          value={this.state.tagy}
+			          onChange={this.handleTagyChange}
+			        />
+			        <textarea
+			          rows="5" cols="50" 
+			          placeholder="Popis"
+			          value={this.state.popis}
+			          onChange={this.handlePopisChange}
+			        />
+			        <input id="foto" type="file" name="foto" className="upload-file" onChange={this.handleFileChange}/><br/>
+			        <input type="submit" value="Uložit" />
+			      </form>
+			  </div>
 		      <div className="preview">
 		      	{uploaded}
-	          </div>
-		      <div className="foot-div"/>
-		     </div>
+	          </div></div>
 	    );
 	  }
 	});
