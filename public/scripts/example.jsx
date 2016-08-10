@@ -15,8 +15,8 @@ var List = React.createClass({
 		  url: url,
 		  dataType: 'json',
 		  cache: false,
-		  success: function(data) {
-			  this.setState({data: data});
+		  success: function(data) {		  	  
+			  this.setState({data: data, view: view, startkey: startkey, endkey: endkey});
 		  }.bind(this),
 		  error: function(xhr, status, err) {
 			  console.error(this.props.url, status, err.toString());
@@ -45,6 +45,25 @@ var List = React.createClass({
 		img.style.display = "block";
 		img.src = e.target.src;
 	},
+	onDelete: function(item) {
+	    var url = "delete?id=" + item.id + "&rev=" + item.rev;
+	    console.log("onDelete: " + url);
+        
+	    $.ajax({
+	        url: url,
+	        type: 'GET',
+	        cache: false,
+	        contentType: false,
+	        success: function(data) {
+	        	this.load(this.state.view, this.state.startkey, this.state.endkey);
+	        	console.log("delete done");
+	        }.bind(this),
+	        error: function(xhr, status, err) {
+	        	console.error(this.props.url, status, err.toString());
+	        }.bind(this)
+	      });
+	    
+	  },
 	render: function() {
 		  var items = this.state.data.map(function(item) {
 			  var image;
@@ -59,7 +78,10 @@ var List = React.createClass({
 						<td>{item.datum}</td>
 						<td>{item.popis}</td>
 						<td>{item.tagy}</td>
-						<td className="oper-td"><img className="img-button" src="imgs/pencil_16.png"/>&nbsp;&nbsp;<img className="img-button" src="imgs/delete_16.png"/></td>	
+						<td className="oper-td">
+							<img className="img-button" src="imgs/pencil_16.png"/>&nbsp;&nbsp;
+							<img className="img-button" src="imgs/delete_16.png" onClick={() => this.onDelete(item)}/>
+						</td>	
 			        </tr>
 				);
 		  }.bind(this));
@@ -136,7 +158,7 @@ var ItemsForm = React.createClass({
 	    var nazev = this.state.nazev.trim();
 	    var popis = this.state.popis.trim();
 	    var tagy = this.state.tagy.trim();
-	    if (!nazev) {
+	    if (!nazev || !this.state.data_uri) {
 	      return;
 	    }
 	    
@@ -149,7 +171,7 @@ var ItemsForm = React.createClass({
         data.append('filesize', this.state.filesize);
         data.append('file', this.state.data_uri.split(",", 2)[1]);
 
-	    this.setState({nazev: '', popis: '', tagy: '', data_uri: '', filename: '', filetype: '', filesize : 0});
+	    this.setState({nazev: '', popis: '', tagy: '', data_uri: '', filename: '', filetype: '', filesize : 0, foto: ''});
 	    
 	    $.ajax({
 	        url: this.props.url,

@@ -29,7 +29,7 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 
 app.use(formidable.parse({
 	uploadDir : '/uploads/', // where you want to store uploaded files
-								// (temporary)
+	// (temporary)
 	encoding : 'utf-8',
 	keepExtensions : true, // if you want to store files with extensions
 	multiples : true, // if you allow to upload multiple files
@@ -95,7 +95,8 @@ app.get("/data", function(req, res) {
 				}
 
 				var jsonItem = {
-					id : row.id,
+					id : item._id,
+					rev : item._rev,
 					jmeno : item.nazev,
 					datum : dateFormat(new Date(item.datum), "d.m.yyyy"),
 					popis : item.popis,
@@ -116,12 +117,25 @@ app.get("/data", function(req, res) {
 
 // Images
 app.get("/image", function(req, res) {
-	console.log("Accessing: /image");
+	console.log("Accessing: " + req.url);
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;
 	dao.attachment.get(query.id, query.image, function(err, body) {
 		if (!err) {
 			res.end(body, 'binary');
+		}
+	});
+});
+
+// Delete
+app.get("/delete", function(req, res) {
+	console.log("Deleting: " + req.url);
+	var url_parts = url.parse(req.url, true);
+	var query = url_parts.query;
+	dao.destroy(query.id, query.rev, function(err, body) {
+		if (!err) {
+			console.log(body);
+			res.end();
 		}
 	});
 });
@@ -153,9 +167,9 @@ app.post("/data", function(req, res) {
 			res.end();
 		}
 	});
-
 });
 
 app.listen(3000);
 
 console.log("Ready and listening...");
+
