@@ -165,6 +165,20 @@ var List = React.createClass({
 		img.style.display = "block";
 		img.src = e.target.src;
 	},
+	onEdit: function(item) {
+		this.itemsForm.setState({
+			nazev: item.jmeno,
+		    popis: item.popis,
+		    tagy: item.tagy,
+		    id: item.id,
+		    rev: item.rev,
+		    attachments: item.attachments
+		});
+		document.getElementById("image-preview").src = "image?id=" + item.id + "&image=" + item.foto;
+		document.getElementById("foto-field").value = "";
+		document.getElementById("cancel-button").style.display = "inline-block";
+		document.getElementById("submit-button").value = "Upravit";
+	},
 	onDelete: function(item) {
 	    var url = "delete?id=" + item.id + "&rev=" + item.rev;
 	    console.log("onDelete: " + url);
@@ -205,7 +219,7 @@ var List = React.createClass({
 						<td>{item.popis}</td>
 						<td>{item.tagy}</td>
 						<td className="oper-td">
-							<img className="img-button" src="imgs/pencil_16.png"/>&nbsp;&nbsp;
+							<img className="img-button" src="imgs/pencil_16.png" onClick={() => this.onEdit(item)}/>&nbsp;&nbsp;
 							<img className="img-button" src="imgs/delete_16.png" onClick={() => this.onDelete(item)}/>
 						</td>	
 			        </tr>
@@ -247,7 +261,8 @@ var List = React.createClass({
 
 var ItemsForm = React.createClass({
 	  getInitialState: function() {
-	    return {nazev: '', popis: '', tagy: '', file: ''};
+	  	this.props.list.itemsForm = this; 
+	    return this.getCleanState();
 	  },
 	  handleNazevChange: function(e) {
 	    this.setState({nazev: e.target.value});
@@ -278,13 +293,32 @@ var ItemsForm = React.createClass({
 	    reader.readAsDataURL(file); // base64 s prefixem
 	    
 	  },
+	  getCleanState: function() {
+		  return {
+		    	nazev: '', 
+		    	popis: '', 
+		    	tagy: '', 
+		    	data_uri: '', 
+		    	filename: '', 
+		    	filetype: '', 
+		    	filesize : 0, 
+		    	foto: '',
+		    	id: '',
+		    	rev: '',
+		    	attachments: ''
+		    };
+	  },
 	  handleSubmit: function(e) {
   	    e.preventDefault();
 	    
+	    var id = this.state.id;
+	    var rev = this.state.rev;
+	    var attachments = this.state.attachments;
+	    
 	    var nazev = this.state.nazev.trim();
 	    var popis = this.state.popis.trim();
-	    var tagy = this.state.tagy.trim();
-	    if (!nazev || !this.state.data_uri) {
+	    var tagy =  this.state.tagy.trim();
+	    if (!nazev || (!this.state.data_uri && !id) ) {
 	      return;
 	    }
 	    
@@ -292,12 +326,17 @@ var ItemsForm = React.createClass({
         data.append('nazev', nazev);
         data.append('popis', popis);
         data.append('tagy', tagy);
-        data.append('filename', this.state.filename);
-        data.append('filetype', this.state.filetype);
-        data.append('filesize', this.state.filesize);
-        data.append('file', this.state.data_uri.split(",", 2)[1]);
-
-	    this.setState({nazev: '', popis: '', tagy: '', data_uri: '', filename: '', filetype: '', filesize : 0, foto: ''});
+        data.append('id', id);
+        data.append('rev', rev);
+        data.append('attachments', attachments);
+        if (this.state.data_uri) {
+	        data.append('filename', this.state.filename);
+	        data.append('filetype', this.state.filetype);
+	        data.append('filesize', this.state.filesize);
+	        data.append('file', this.state.data_uri.split(",", 2)[1]);
+		}
+		
+	    this.setState(this.getCleanState());
 	    
 	    $.ajax({
 	        url: this.props.url,
@@ -318,38 +357,46 @@ var ItemsForm = React.createClass({
 	      });
 	    
 	  },
+	  onCancel: function() {
+		this.setState(this.getCleanState());
+		document.getElementById("image-preview").src = "";
+		document.getElementById("cancel-button").style.display = "none";
+		document.getElementById("submit-button").value = "Uložit";
+	  },
 	  render: function() {
 		  let uploaded;
-		  if (this.state.data_uri) {
 		      uploaded = (
-		        <img className='image-preview' src={this.state.data_uri} />
+		        <img id='image-preview' src={this.state.data_uri} />
 		      );
-		    }
 		var even = true;
 	    return (
 		    <div className="form-div">
 		      <div className="items-form-div">
-			      <form ref="upload-form" className="items-form" encType="multipart/form-data" onSubmit={this.handleSubmit}>	      	
+			      <form ref="upload-form" className="items-form" encType="multipart/form-data" onSubmit={this.handleSubmit}>	
 			        <input
+			          id="nazev-field"
 			          type="text"
 			          placeholder="Název"
 			          value={this.state.nazev}
 			          onChange={this.handleNazevChange}
 			        />
 			        <input
+			          id="tagy-field"
 			          type="text"
 			          placeholder="Štítky"
 			          value={this.state.tagy}
 			          onChange={this.handleTagyChange}
 			        />
 			        <textarea
+			          id="popis-field"
 			          rows="5" cols="50" 
 			          placeholder="Popis"
 			          value={this.state.popis}
 			          onChange={this.handlePopisChange}
 			        />
-			        <input id="foto" type="file" name="foto" className="upload-file" onChange={this.handleFileChange}/><br/>
-			        <input type="submit" value="Uložit" />
+			        <input id="foto-field" type="file" name="foto" className="upload-file" onChange={this.handleFileChange}/><br/>
+			        <input id="cancel-button" type="button" value="Zahodit úpravy" onClick={() => this.onCancel()}/>
+			        <input id="submit-button" type="submit" value="Uložit" />
 			      </form>
 			  </div>
 		      <div className="preview">

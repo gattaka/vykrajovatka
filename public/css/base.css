@@ -88,14 +88,16 @@ input[type=text] {
 	width: 50%;
 }
 
-form.items-form {
-	
+input, textarea {
+	font-family: sans-serif;
+	border: 1px solid #aaa;
+	border-radius: 3px;
+	box-sizing: border-box;
 }
 
 form.items-form input, textarea {
 	font-size: 15px;
 	margin-top: 8px;
-	width: 100%;
 }
 
 form.items-form input:FIRST-CHILD {
@@ -104,14 +106,16 @@ form.items-form input:FIRST-CHILD {
 
 form.items-form input[type=text], textarea {
 	padding: 2px;
-	box-sizing: border-box;
-	/* 	display: block; */
 }
 
-input[type=text], input[type=submit], textarea {
-	font-family: sans-serif;
-	border: 1px solid #aaa;
-	border-radius: 3px;
+form.items-form input[type=text], form.items-form input[type=file], form.items-form textarea
+	{
+	width: 100%;
+}
+
+input[type=submit], input[type=button] {
+	display: inline-block;
+	width: 40%;
 }
 
 .preview {
@@ -128,7 +132,7 @@ input[type=text], input[type=submit], textarea {
 	max-width: 50px;
 }
 
-.image-preview {
+#image-preview {
 	max-width: 443px;
 	max-height: 206px;
 }
@@ -233,16 +237,21 @@ table.list-table {
 
 .modal-content-wrapper {
 	border-radius: 6px;
-    box-sizing: border-box;
-    background-color: #fff;
-    display: inline-block;
-    padding: 8px;
+	box-sizing: border-box;
+	background-color: #fff;
+	display: inline-block;
+	padding: 8px;
 }
 
 .modal-content {
-    border-radius: 6px;
-    box-sizing: border-box;
-    background-color: #eee;
-    display: inline-block;
-    padding: 20px;
+	border-radius: 6px;
+	box-sizing: border-box;
+	background-color: #eee;
+	display: inline-block;
+	padding: 20px;
+}
+
+#cancel-button {
+	display: none;
+	margin-right: 8px;
 }

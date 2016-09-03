@@ -96,6 +96,7 @@ app.get("/data", function(req, res) {
 				var jsonItem = {
 					id : item._id,
 					rev : item._rev,
+					attachments : item._attachments,
 					jmeno : item.nazev,
 					datum : dateFormat(new Date(item.datum), "d.m.yyyy"),
 					popis : item.popis,
@@ -123,7 +124,7 @@ app.get("/image", function(req, res) {
 		if (!err) {
 			res.end(body, 'binary');
 		} else {
-			res.status(404).send();			
+			res.status(404).send();
 		}
 	});
 });
@@ -153,24 +154,51 @@ app.post("/data", function(req, res) {
 		popis : fields.popis,
 	};
 
-	var buffer = new Buffer(fields.file, 'base64');
-	var attach = {
-		name : fields.filename,
-		data : buffer,
-		content_type : fields.filetype
-	};
+	if (fields.file) {
+		var buffer = new Buffer(fields.file, 'base64');
+		var attach = {
+			name : fields.filename,
+			data : buffer,
+			content_type : fields.filetype
+		};
+	}
 
-	dao.multipart.insert(doc, [ attach ], uuid.v1(), function(err) {
+	var callback = function(err) {
 		if (err) {
 			console.log('failed: ' + err);
 		} else {
 			console.log('succeeded');
 			res.end();
 		}
-	});
+	};
+
+	if (fields.rev) {
+		console.log("Update");
+		// update
+		doc._id = fields.id;
+		doc._rev = fields.rev;
+		doc._attachments = fields.attachments;
+		console.log("doc._id: " + fields.id);
+		console.log("doc._rev: " + fields.rev);
+		console.log("doc._attachments: " + fields.attachments);
+		dao.insert(doc, callback);
+		// pokud mám i změnu přílohy, pak update attachmentu
+		if (attach) {
+			console.log("With attachment");
+			dao.attachment.insert(doc._id, attach.name, attach.buffer,
+					attach.content_type, {
+						rev : doc._rev
+					}, function(err, body) {
+						if (!err)
+							console.log(body);
+					});
+		}
+	} else {
+		console.log("Create");
+		dao.multipart.insert(doc, [ attach ], uuid.v1(), callback);
+	}
 });
 
 app.listen(3000);
 
 console.log("Ready and listening...");
-
