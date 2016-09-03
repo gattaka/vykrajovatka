@@ -328,15 +328,13 @@ var ItemsForm = React.createClass({
         data.append('tagy', tagy);
         data.append('id', id);
         data.append('rev', rev);
-        data.append('attachments', attachments);
+        data.append('attachments', JSON.stringify(attachments));
         if (this.state.data_uri) {
 	        data.append('filename', this.state.filename);
 	        data.append('filetype', this.state.filetype);
 	        data.append('filesize', this.state.filesize);
 	        data.append('file', this.state.data_uri.split(",", 2)[1]);
 		}
-		
-	    this.setState(this.getCleanState());
 	    
 	    $.ajax({
 	        url: this.props.url,
@@ -347,7 +345,7 @@ var ItemsForm = React.createClass({
 	        cache: false,
 	        contentType: false,
 	        success: function(data) {
-	        	this.setState({data: data});
+		    	this.onCancel();
 	        	this.props.list.load();
 	        	console.log("submit done");
 	        }.bind(this),

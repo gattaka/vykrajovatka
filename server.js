@@ -177,9 +177,9 @@ app.post("/data", function(req, res) {
 		// update
 		doc._id = fields.id;
 		doc._rev = fields.rev;
-		doc._attachments = fields.attachments;
-		console.log("doc._id: " + fields.id);
-		console.log("doc._rev: " + fields.rev);
+		doc._attachments = JSON.parse(fields.attachments);
+		console.log("doc._id: " + doc._id);
+		console.log("doc._rev: " + doc._rev);
 		console.log("doc._attachments: " + fields.attachments);
 		dao.insert(doc, callback);
 		// pokud mám i změnu přílohy, pak update attachmentu
@@ -202,3 +202,4 @@ app.post("/data", function(req, res) {
 app.listen(3000);
 
 console.log("Ready and listening...");
+
