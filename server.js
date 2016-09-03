@@ -84,7 +84,6 @@ app.get("/data", function(req, res) {
 			var json = [];
 			select_body.rows.forEach(function(row) {
 				var doc_id = row.id;
-				var doc = row.doc;
 				var item = row.value;
 
 				// TODO tohle by se mělo dělat na DB
@@ -123,6 +122,8 @@ app.get("/image", function(req, res) {
 	dao.attachment.get(query.id, query.image, function(err, body) {
 		if (!err) {
 			res.end(body, 'binary');
+		} else {
+			res.status(404).send();			
 		}
 	});
 });
