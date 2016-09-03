@@ -1,3 +1,123 @@
+var Modal = React.createClass({
+  displayName: 'Modal',
+
+  modal: function() {
+    var style = {display: 'block'};
+    return (
+      <div
+        tabIndex='-1'
+        role='dialog'
+        aria-hidden='false'
+        ref='modal'
+        style={style}
+      >
+      	<div className="shadow"></div>
+        <div className='modal-dialog'>
+          <div className='modal-content-wrapper'>
+	          <div className='modal-content'>
+	            {this.props.children}
+	          </div>
+	      </div>
+        </div>
+      </div>
+    );
+  },
+
+  render: function() {
+    return (
+      <div>
+        {this.modal()}
+      </div>
+    );
+  }
+});
+
+var Confirm = React.createClass({
+  displayName: 'Confirm',
+  getDefaultProps: function() {
+    return {
+      confirmLabel: 'OK',
+      abortLabel: 'Cancel'
+    };
+  },
+
+  abort: function() {
+    return this.promise.reject();
+  },
+
+  confirm: function() {
+    return this.promise.resolve();
+  },
+
+  componentDidMount: function() {
+    this.promise = new $.Deferred();
+    return ReactDOM.findDOMNode(this.refs.confirm).focus();
+  },
+
+  render: function() {
+    var modalBody;
+    if (this.props.description) {
+      modalBody = (
+        <div className='modal-body'>
+          {this.props.description}
+        </div>
+      );
+    }
+
+    return (
+      <Modal>
+        <div className='modal-header'>
+          <h4 className='modal-title'>
+            {this.props.message}
+          </h4>
+        </div>
+        {modalBody}
+        <div className='modal-footer'>
+          <div className='text-right'>
+            <button
+              role='abort'
+              type='button'
+              className='btn btn-default'
+              onClick={this.abort}
+            >
+              {this.props.abortLabel}
+            </button>
+            {' '}
+            <button
+              role='confirm'
+              type='button'
+              className='btn btn-primary'
+              ref='confirm'
+              onClick={this.confirm}
+            >
+              {this.props.confirmLabel}
+            </button>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
+});
+ 
+var confirm = function(message, options) {
+  var cleanup, component, props, wrapper;
+  if (options == null) {
+    options = {};
+  }
+  props = $.extend({
+    message: message
+  }, options);
+  wrapper = document.body.appendChild(document.createElement('div'));
+  component = ReactDOM.render(<Confirm {...props}/>, wrapper);
+  cleanup = function() {
+    ReactDOM.unmountComponentAtNode(wrapper);
+    return setTimeout(function() {
+      return wrapper.remove();
+    });
+  };
+  return component.promise.always(cleanup).promise();
+};
+
 var List = React.createClass({
 	getInitialState: function() {
 	    return {data: []};
@@ -40,7 +160,7 @@ var List = React.createClass({
 		$(".nazev-query")[0].value = "";
 	},
 	onImgDetail : function(e) {
-		$("#shadow")[0].style.display = "block";
+		$("#img-detail-wrapper")[0].style.display = "block";
 		var img = $("#img-detail")[0];
 		img.style.display = "block";
 		img.src = e.target.src;
@@ -49,19 +169,25 @@ var List = React.createClass({
 	    var url = "delete?id=" + item.id + "&rev=" + item.rev;
 	    console.log("onDelete: " + url);
         
-	    $.ajax({
-	        url: url,
-	        type: 'GET',
-	        cache: false,
-	        contentType: false,
-	        success: function(data) {
-	        	this.load(this.state.view, this.state.startkey, this.state.endkey);
-	        	console.log("delete done");
-	        }.bind(this),
-	        error: function(xhr, status, err) {
-	        	console.error(this.props.url, status, err.toString());
-	        }.bind(this)
-	      });
+        confirm("Opravdu smazat '" + item.jmeno + "'?", {
+				confirmLabel: 'Ano',
+				abortLabel: 'Ne'
+			}).then((function(_this) {
+			return function() {
+			  $.ajax({
+			        url: url,
+			        type: 'GET',
+			        cache: false,
+			        contentType: false,
+			        success: function(data) {
+			        	this.load(this.state.view, this.state.startkey, this.state.endkey);
+			        	console.log("delete done");
+			        }.bind(_this),
+			        error: function(xhr, status, err) {
+			        	console.error(this.props.url, status, err.toString());
+			        }.bind(_this)
+			      });
+			}})(this));
 	    
 	  },
 	render: function() {

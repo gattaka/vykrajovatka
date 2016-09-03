@@ -191,7 +191,7 @@ table.list-table {
 	width: 180px;
 }
 
-#shadow {
+.shadow {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -199,6 +199,9 @@ table.list-table {
 	height: 100%;
 	background: #000;
 	opacity: 0.5;
+}
+
+#img-detail-wrapper {
 	display: none;
 }
 
@@ -219,4 +222,27 @@ table.list-table {
 
 .oper-td {
 	width: 40px;
+}
+
+.modal-dialog {
+	position: fixed;
+	top: 30%;
+	width: 100%;
+	left: 0;
+}
+
+.modal-content-wrapper {
+	border-radius: 6px;
+    box-sizing: border-box;
+    background-color: #fff;
+    display: inline-block;
+    padding: 8px;
+}
+
+.modal-content {
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: #eee;
+    display: inline-block;
+    padding: 20px;
 }
