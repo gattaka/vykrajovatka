@@ -120,22 +120,52 @@ var confirm = function(message, options) {
 
 var List = React.createClass({
 	getInitialState: function() {
-	    return {data: []};
+	    return {data: { items:[]}, page: 0, hasNext: true};
 	},
 	componentDidMount: function() {
 		this.load();
 	},
-	load: function(view, startkey, endkey) {
+	load: function(view, startkey, endkey, page) {
+	  console.log("1 page: " + page);	
 	  var url = this.props.url;
+	  if (page || page == 0) {
+		  if (page <= 0) {
+		  	page = 0;
+		  }
+		  this.setState({page: page});
+	  } else {
+	  	page = this.state.page;
+	  }
+	  
+	  console.log("2 page: " + page);	
+	  url += "?page=" + page;
+	  
+	  // Tohle je divné, this.state zápis se 
+	  // projeví až časem, takže pokud z něj
+	  // okamžitě načtu, není tam ta nová hodnota,
+	  // ale je tam ještě ta stará, proto musím
+	  // sice hodnotu do něj uložit, ale dál se 
+	  // řídit dle aktuálního stavu
 	  if (view) {
-	  	url += "?view=" + view + "&startkey=" + startkey + "&endkey=" + endkey;
+		this.setState({view : view})
+		this.setState({startkey : startkey})
+		this.setState({endkey : endkey})
+	  } else {
+	  	view = this.state.view;
+	  	startkey = this.state.startkey;
+	  	endkey = this.state.endkey;
 	  }
 	
+	  if (view) {
+	  	url += "&view=" + view + "&startkey=" + startkey + "&endkey=" + endkey;
+	  }
+	  
 	  $.ajax({
 		  url: url,
 		  dataType: 'json',
 		  cache: false,
-		  success: function(data) {		  	  
+		  success: function(data) {		
+		  	  console.log("load success");	  	  
 			  this.setState({data: data, view: view, startkey: startkey, endkey: endkey});
 		  }.bind(this),
 		  error: function(xhr, status, err) {
@@ -147,17 +177,25 @@ var List = React.createClass({
 		console.log("handleNazevQueryChange");
 		this.load("byNazev", e.target.value, e.target.value);
 		$(".tagy-query")[0].value = "";
+		$("#datum-od-query")[0].value = "";
+		$("#datum-do-query")[0].value = "";
 	},
-	handleDatumOdQueryChange : function(e) {
-		console.log("handleDatumOdQueryChange");
-	},
-	handleDatumDoQueryChange : function(e) {
-		console.log("handleDatumDoQueryChange");
+	handleDatumQueryChange : function(e) {
+		var odDatum = document.getElementById("datum-od-query").value;
+		var doDatum = document.getElementById("datum-do-query").value;
+		if (!odDatum) odDatum = doDatum;
+		if (!doDatum) doDatum = odDatum;
+		console.log("handleDatumQueryChange");
+		this.load("byDatum", odDatum, doDatum);
+		$(".tagy-query")[0].value = "";
+		$(".nazev-query")[0].value = "";
 	},
 	handleTagyQueryChange : function(e) {
 		console.log("handleTagyQueryChange");
 		this.load("byTag", e.target.value, e.target.value);
 		$(".nazev-query")[0].value = "";
+		$("#datum-od-query")[0].value = "";
+		$("#datum-do-query")[0].value = "";
 	},
 	onImgDetail : function(e) {
 		$("#img-detail-wrapper")[0].style.display = "block";
@@ -194,7 +232,7 @@ var List = React.createClass({
 			        cache: false,
 			        contentType: false,
 			        success: function(data) {
-			        	this.load(this.state.view, this.state.startkey, this.state.endkey);
+			        	this.load(this.state.view, this.state.startkey, this.state.endkey, this.state.page);
 			        	console.log("delete done");
 			        }.bind(_this),
 			        error: function(xhr, status, err) {
@@ -205,7 +243,7 @@ var List = React.createClass({
 	    
 	  },
 	render: function() {
-		  var items = this.state.data.map(function(item) {
+		  var items = this.state.data.items.map(function(item) {
 			  var image;
 			  var imagePath = "image?id=" + item.id + "&image=" + item.foto;
 			  if (typeof imagePath !== "undefined") {
@@ -225,6 +263,21 @@ var List = React.createClass({
 			        </tr>
 				);
 		  }.bind(this));
+		  var pages = [];
+		  var first = 0;
+		  var last = Math.ceil(this.state.data.totalRows / this.state.data.pageSize) - 1;
+		  var min = this.state.page - 5;
+		  var max = this.state.page + 5;
+		  min = min < first ? first : min;
+		  max = max > last ? last : max;
+		  var self = this;
+		  for (var p = min; p <= max; p++) {
+		  	(function() {
+		  		var q  = p;
+		  		var fce = () => self.load(undefined,undefined,undefined,q);
+	  			pages.push(<input key={"pageBtn"+q} className="page-button" type="button" onClick={fce} value={q+1} />);
+		  	})();
+		  } 
 		  return (
 				<div className="main-div">
 				   <div className="list-div">
@@ -242,8 +295,8 @@ var List = React.createClass({
 						        	<td></td>
 							        <td><input className="nazev-query" type="text" placeholder="Vyhledat dle názvu" onChange={this.handleNazevQueryChange} /></td>
 									<td className="query-datum-td"><div>
-										<input className="datum-od-query" type="text" placeholder="Datum od" onChange={this.handleDatumOdQueryChange} />&nbsp;-&nbsp; 
-										<input className="datum-do-query" type="text" placeholder="Datum do" onChange={this.handleDatumDoQueryChange} />
+										<input id="datum-od-query" type="text" placeholder="Datum od" onChange={this.handleDatumQueryChange} />&nbsp;-&nbsp; 
+										<input id="datum-do-query" type="text" placeholder="Datum do" onChange={this.handleDatumQueryChange} />
 									</div></td>
 									<td className="popis-query-td"></td>
 									<td><input className="tagy-query" type="text" placeholder="Vyhledat dle štítku" onChange={this.handleTagyQueryChange} /></td>
@@ -253,6 +306,11 @@ var List = React.createClass({
 							</tbody>
 						</table>
 					</div>
+					<div className="pager">
+						<input className="page-button" type="button" onClick={() => this.load(undefined,undefined,undefined,first)} value="|<" />
+						{pages}
+						<input className="page-button" type="button" onClick={() => this.load(undefined,undefined,undefined,last)} value=">|" />
+					</div> 
 					<ItemsForm url={this.props.url} list={this}/>
 				</div>
 		  );
@@ -360,6 +418,7 @@ var ItemsForm = React.createClass({
 		document.getElementById("image-preview").src = "";
 		document.getElementById("cancel-button").style.display = "none";
 		document.getElementById("submit-button").value = "Uložit";
+		document.getElementById("foto-field").value = "";
 	  },
 	  render: function() {
 		  let uploaded;

@@ -10,6 +10,8 @@ var dateFormat = require('dateformat');
 
 var app = express();
 
+var PAGE_SIZE = 5;
+
 var dao;
 nano.db.list(function(err, body) {
 	// body is an array
@@ -61,7 +63,10 @@ app.get("/data", function(req, res) {
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;
 
-	var params = {};
+	var params = {
+		limit : PAGE_SIZE,
+		skip : query.page * PAGE_SIZE	
+	};
 
 	if (!query.view) {
 		query.view = "byNazev";
@@ -81,7 +86,11 @@ app.get("/data", function(req, res) {
 	dao.view("vykraj", query.view, params, function(select_err, select_body) {
 		if (!select_err) {
 			var dups = {};
-			var json = [];
+			var json = {
+				items: [],
+				totalRows: select_body.total_rows,
+				pageSize: PAGE_SIZE 
+			};
 			select_body.rows.forEach(function(row) {
 				var doc_id = row.id;
 				var item = row.value;
@@ -100,13 +109,13 @@ app.get("/data", function(req, res) {
 					jmeno : item.nazev,
 					datum : dateFormat(new Date(item.datum), "d.m.yyyy"),
 					popis : item.popis,
-					tagy : item.tagy,
+					tagy : item.tagy
 				};
 
 				if (typeof item._attachments !== 'undefined') {
 					jsonItem.foto = Object.keys(item._attachments)[0];
 				}
-				json.push(jsonItem);
+				json.items.push(jsonItem);
 			});
 			res.send(json);
 		} else {
@@ -202,4 +211,3 @@ app.post("/data", function(req, res) {
 app.listen(3000);
 
 console.log("Ready and listening...");
-

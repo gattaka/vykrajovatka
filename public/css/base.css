@@ -59,6 +59,10 @@ ul {
 	padding-left: 30px;
 }
 
+th {
+	padding: 2px;
+}
+
 textarea {
 	font-family: sans-serif;
 }
@@ -113,7 +117,7 @@ form.items-form input[type=text], form.items-form input[type=file], form.items-f
 	width: 100%;
 }
 
-input[type=submit], input[type=button] {
+form.items-form input[type=submit], form.items-form input[type=button] {
 	display: inline-block;
 	width: 40%;
 }
@@ -137,12 +141,18 @@ input[type=submit], input[type=button] {
 	max-height: 206px;
 }
 
-.list-div {
+.list-div, .pager {
 	margin: 0 0 8px 0;
 	border-radius: 6px;
 	box-sizing: border-box;
 	background-color: #eee;
 	padding: 8px;
+	line-height: normal;
+}
+
+.page-button {
+	width: inherit;
+	margin-left: 8px;	
 }
 
 tbody tr:nth-child(odd) {
@@ -174,7 +184,7 @@ table.list-table {
 	min-width: 65px;
 }
 
-.nazev-query, .datum-od-query, .datum-do-query, .popis-query,
+.nazev-query, #datum-od-query, #datum-do-query, .popis-query,
 	.tagy-query {
 	text-align: center;
 }
@@ -183,7 +193,7 @@ table.list-table {
 	width: 180px;
 }
 
-.datum-od-query, .datum-do-query {
+#datum-od-query, #datum-do-query {
 	width: 75px;
 }
 
