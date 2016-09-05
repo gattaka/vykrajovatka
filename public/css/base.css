@@ -114,7 +114,7 @@ form.items-form input[type=text], textarea {
 
 form.items-form input[type=text], form.items-form input[type=file], form.items-form textarea
 	{
-	width: 100%;
+	width: 470px;
 }
 
 form.items-form input[type=submit], form.items-form input[type=button] {
@@ -122,8 +122,22 @@ form.items-form input[type=submit], form.items-form input[type=button] {
 	width: 40%;
 }
 
+#nazev-field, #datum-field {
+	display: inline-block;
+}
+
+#nazev-field {
+	margin-right: 8px;
+	width: 232px;
+}
+
+#datum-field {
+	margin-top: 0px;
+	width: 230px;
+}
+
 .preview {
-	height: 213px;
+	height: 215px;
 	border: 1px solid #aaa;
 	border-radius: 3px;
 	padding: 4px;
@@ -152,7 +166,7 @@ form.items-form input[type=submit], form.items-form input[type=button] {
 
 .page-button {
 	width: inherit;
-	margin-left: 8px;	
+	margin-left: 8px;
 }
 
 tbody tr:nth-child(odd) {

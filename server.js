@@ -107,7 +107,7 @@ app.get("/data", function(req, res) {
 					rev : item._rev,
 					attachments : item._attachments,
 					jmeno : item.nazev,
-					datum : dateFormat(new Date(item.datum), "d.m.yyyy"),
+					datum : item.datum,
 					popis : item.popis,
 					tagy : item.tagy
 				};
@@ -157,7 +157,7 @@ app.post("/data", function(req, res) {
 	var fields = req.body;
 
 	var doc = {
-		datum : Date.now(),
+		datum : fields.datum,
 		nazev : fields.nazev,
 		tagy : fields.tagy,
 		popis : fields.popis,

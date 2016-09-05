@@ -207,6 +207,7 @@ var List = React.createClass({
 		this.itemsForm.setState({
 			nazev: item.jmeno,
 		    popis: item.popis,
+		    datum: item.datum,
 		    tagy: item.tagy,
 		    id: item.id,
 		    rev: item.rev,
@@ -328,6 +329,9 @@ var ItemsForm = React.createClass({
 	  handlePopisChange: function(e) {
 	    this.setState({popis: e.target.value});
 	  },
+	  handleDatumChange: function(e) {
+	    this.setState({datum: e.target.value});
+	  },
 	  handleTagyChange: function(e) {
 	    this.setState({tagy: e.target.value});
 	  },
@@ -355,7 +359,8 @@ var ItemsForm = React.createClass({
 		  return {
 		    	nazev: '', 
 		    	popis: '', 
-		    	tagy: '', 
+		    	tagy: '',
+		    	datum: '',  
 		    	data_uri: '', 
 		    	filename: '', 
 		    	filetype: '', 
@@ -375,6 +380,7 @@ var ItemsForm = React.createClass({
 	    
 	    var nazev = this.state.nazev.trim();
 	    var popis = this.state.popis.trim();
+	    var datum = this.state.datum.trim();
 	    var tagy =  this.state.tagy.trim();
 	    if (!nazev || (!this.state.data_uri && !id) ) {
 	      return;
@@ -384,6 +390,7 @@ var ItemsForm = React.createClass({
         data.append('nazev', nazev);
         data.append('popis', popis);
         data.append('tagy', tagy);
+        data.append('datum', datum);
         data.append('id', id);
         data.append('rev', rev);
         data.append('attachments', JSON.stringify(attachments));
@@ -438,9 +445,16 @@ var ItemsForm = React.createClass({
 			          onChange={this.handleNazevChange}
 			        />
 			        <input
+			          id="datum-field"
+			          type="text"
+			          placeholder="Datum např. 2016-05-15"
+			          value={this.state.datum}
+			          onChange={this.handleDatumChange}
+			        />
+			        <input
 			          id="tagy-field"
 			          type="text"
-			          placeholder="Štítky"
+			          placeholder="Štítky např. zvíře, malé"
 			          value={this.state.tagy}
 			          onChange={this.handleTagyChange}
 			        />

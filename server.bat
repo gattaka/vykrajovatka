@@ -1,1 +1,1 @@
-node-debug --debug-port=5858 --web-port=1337 --save-live-edit server.js
+node server.js
