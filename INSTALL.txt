@@ -1,0 +1,35 @@
+1. Programy
+- nainstalovat CouchDB
+- nainstalovat Node.js
+
+2. Konfigurace
+- po startu CouchDB (automaticky nastartováno) otevøít http://127.0.0.1:5984/_utils/
+- services.msc : Apache CouchDB
+- kliknout na "Create Database", zadat "vykraj" a potvrdit
+- pokud se nepøepne samo do databáze "vykraj", kliknout na položku v seznamu a pøepne se
+
+vykraj
+
+_design/vykraj
+
+byDatum:
+function(doc) {
+  emit(doc.datum, doc)
+}
+
+byNazev
+function(doc) {
+  emit(doc.nazev, doc);
+}
+
+byTag
+function(doc) {   
+  if (doc.tagy) {     
+	doc.tagy.split(',').forEach(function(tag) {      
+		var tTag = tag.trim();      
+		if (tTag.length > 0) {        
+			emit(tag.trim(), doc);      
+		}    
+	});  
+  }
+} 
